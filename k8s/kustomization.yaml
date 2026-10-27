@@ -16,10 +16,10 @@ resources:
 images:
   - name: pixelboard-canvas
     newName: teddok/pixelboard-canvas
-    newTag: "1.0"
+    newTag: "1.1"
   - name: pixelboard-history
     newName: teddok/pixelboard-history
-    newTag: "1.0"
+    newTag: "1.1"
   - name: pixelboard-web
     newName: teddok/pixelboard-web
-    newTag: "1.0"
+    newTag: "1.1"

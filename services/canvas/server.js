@@ -30,8 +30,13 @@ function allowed(ip) {
 app.get('/api/health', (req, res) => res.json({ ok: true, service: 'canvas' }));
 
 app.get('/api/canvas', async (req, res) => {
-  const docs = await pixels.find({}, { projection: { _id: 0, x: 1, y: 1, color: 1 } }).toArray();
-  res.json({ width: WIDTH, height: HEIGHT, pixels: docs.map(p => [p.x, p.y, p.color]) });
+  try {
+    const docs = await pixels.find({}, { projection: { _id: 0, x: 1, y: 1, color: 1 } }).toArray();
+    res.json({ width: WIDTH, height: HEIGHT, pixels: docs.map(p => [p.x, p.y, p.color]) });
+  } catch (err) {
+    console.log('canvas read failed:', err.message);
+    res.status(503).json({ error: 'database not available' });
+  }
 });
 
 app.put('/api/pixel', async (req, res) => {
@@ -46,8 +51,13 @@ app.put('/api/pixel', async (req, res) => {
   }
 
   const value = color.toLowerCase();
-  await pixels.updateOne({ x, y }, { $set: { color: value, updatedAt: new Date() } }, { upsert: true });
-  res.json({ x, y, color: value });
+  try {
+    await pixels.updateOne({ x, y }, { $set: { color: value, updatedAt: new Date() } }, { upsert: true });
+    res.json({ x, y, color: value });
+  } catch (err) {
+    console.log('pixel write failed:', err.message);
+    res.status(503).json({ error: 'database not available' });
+  }
 });
 
 async function connectWithRetry() {

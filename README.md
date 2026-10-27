@@ -29,9 +29,9 @@ Open http://localhost:8080. Snapshots are taken every 30 s in compose so the rep
 
 The images are on Docker Hub:
 
-- `teddok/pixelboard-web:1.0`
-- `teddok/pixelboard-canvas:1.0`
-- `teddok/pixelboard-history:1.0`
+- `teddok/pixelboard-web:1.1`
+- `teddok/pixelboard-canvas:1.1`
+- `teddok/pixelboard-history:1.1`
 
 To build and push your own, change the user in `k8s/kustomization.yaml`, log in to Docker Hub, then
 
@@ -71,4 +71,4 @@ that is not a laptop.
 
 - Pixels are last-writer-wins. Two people painting the same pixel at the same time is not a conflict worth solving here.
 - The rate limit is per replica, not global. With three `canvas` replicas a client gets roughly three times the quota. A shared counter in Redis would fix that.
-- Snapshots store the whole canvas each time. Fine at 64x64, would need diffs or a TTL index for a big grid.
+- Snapshots store the whole canvas each time, roughly 160 kB for a full 64x64 board, and old ones are never deleted. A TTL index would be the first fix, diffs for a bigger grid.

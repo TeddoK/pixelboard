@@ -12,17 +12,27 @@ let snapshots;
 app.get('/api/health', (req, res) => res.json({ ok: true, service: 'history' }));
 
 app.get('/api/snapshots', async (req, res) => {
-  const docs = await snapshots
-    .find({}, { projection: { _id: 0, bucket: 1, takenAt: 1, count: 1 } })
-    .sort({ bucket: 1 })
-    .toArray();
-  res.json(docs);
+  try {
+    const docs = await snapshots
+      .find({}, { projection: { _id: 0, bucket: 1, takenAt: 1, count: 1 } })
+      .sort({ bucket: 1 })
+      .toArray();
+    res.json(docs);
+  } catch (err) {
+    console.log('snapshot list failed:', err.message);
+    res.status(503).json({ error: 'database not available' });
+  }
 });
 
 app.get('/api/snapshots/:bucket', async (req, res) => {
-  const doc = await snapshots.findOne({ bucket: req.params.bucket }, { projection: { _id: 0 } });
-  if (!doc) return res.status(404).json({ error: 'no such snapshot' });
-  res.json(doc);
+  try {
+    const doc = await snapshots.findOne({ bucket: req.params.bucket }, { projection: { _id: 0 } });
+    if (!doc) return res.status(404).json({ error: 'no such snapshot' });
+    res.json(doc);
+  } catch (err) {
+    console.log('snapshot read failed:', err.message);
+    res.status(503).json({ error: 'database not available' });
+  }
 });
 
 async function takeSnapshot() {
