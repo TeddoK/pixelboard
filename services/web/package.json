@@ -1,0 +1,13 @@
+{
+  "name": "pixelboard-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "serves the page and forwards API calls to canvas and history",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

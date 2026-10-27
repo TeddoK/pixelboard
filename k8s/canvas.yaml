@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: canvas
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: canvas
+  template:
+    metadata:
+      labels:
+        app: canvas
+    spec:
+      containers:
+        - name: canvas
+          image: pixelboard-canvas
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: pixelboard-config
+          env:
+            - name: MONGO_URL
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-credentials
+                  key: MONGO_URL
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: canvas
+spec:
+  type: ClusterIP
+  selector:
+    app: canvas
+  ports:
+    - port: 3000
+      targetPort: 3000

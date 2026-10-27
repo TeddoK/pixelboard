@@ -1,0 +1,40 @@
+services:
+  mongo:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: pixel
+      MONGO_INITDB_ROOT_PASSWORD: pixelpass
+    volumes:
+      - mongo-data:/data/db
+
+  canvas:
+    build: ./services/canvas
+    environment:
+      MONGO_URL: mongodb://pixel:pixelpass@mongo:27017/?authSource=admin
+      CANVAS_WIDTH: "64"
+      CANVAS_HEIGHT: "64"
+    depends_on:
+      - mongo
+
+  history:
+    build: ./services/history
+    environment:
+      MONGO_URL: mongodb://pixel:pixelpass@mongo:27017/?authSource=admin
+      CANVAS_URL: http://canvas:3000
+      SNAPSHOT_SECONDS: "30"
+    depends_on:
+      - canvas
+
+  web:
+    build: ./services/web
+    environment:
+      CANVAS_URL: http://canvas:3000
+      HISTORY_URL: http://history:3001
+    ports:
+      - "8080:8080"
+    depends_on:
+      - canvas
+      - history
+
+volumes:
+  mongo-data:

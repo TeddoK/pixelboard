@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pixelboard-config
+data:
+  CANVAS_WIDTH: "64"
+  CANVAS_HEIGHT: "64"
+  RATE_LIMIT_PER_MIN: "60"
+  SNAPSHOT_SECONDS: "60"
+  # service names resolve through cluster DNS, no IP addresses needed
+  CANVAS_URL: http://canvas:3000
+  HISTORY_URL: http://history:3001
